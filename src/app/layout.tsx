@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-
+import 'antd/dist/reset.css';
 import '@/app/globals.css';
+import { NotificationProvider } from "@/components/notification/notification";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,9 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AntdRegistry>
-          {children}
-        </AntdRegistry>
+        <NotificationProvider>
+          <AntdRegistry>
+            {children}
+          </AntdRegistry>
+        </NotificationProvider>
+
 
       </body>
     </html>

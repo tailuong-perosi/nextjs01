@@ -12,4 +12,14 @@ export class AuthService {
     const response = await api.post<IAuthLogin>('/auth/register', { username, password, phone, email });
     return response.data;
   }
+
+  static async sendMail(email: string): Promise<IAuthLogin> {
+    const response = await api.put<IAuthLogin>('/auth/send-mail', {email});
+    return response.data;
+  }
+
+  static async verifyMail(email: string, code: string): Promise<IAuthLogin> {
+    const response = await api.put<IAuthLogin>('/auth/verify-email', {email, code});
+    return response.data;
+  }
 }

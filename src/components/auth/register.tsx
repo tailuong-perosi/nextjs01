@@ -1,43 +1,35 @@
 'use client'
 import React, { useState } from 'react';
-import { Button, Col, Divider, Form, Input, notification, Row, Typography, Upload } from 'antd';
+import { Button, Col, Divider, Form, Input, notification, NotificationArgsProps, Row, Typography, Upload } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AuthService } from '@/services/auth.service';
 import { UserOutlined, MailOutlined, LockOutlined, PhoneOutlined, UploadOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
 import styles from "./register.module.scss";
+import { showNotification } from '@/utils/notification.util';
+import { getAxiosErrorMessage } from '@/utils/error.util';
 
 const { Title, Paragraph } = Typography;
 
 const illustrationUrl =
-  "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80";
+  "https://cdn.pixabay.com/photo/2021/07/26/07/32/travel-6493621_1280.jpg";
 const Register = () => {
   const [loading, setLoading] = useState(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const router = useRouter();
   const onFinish = async (values: any) => {
-
-    const { username, password, email, phone } = values
-    const res = await AuthService.registerHandle(username, password, phone, email)
-    if (res.statusCode === 201) {
-      openNotification('success', 'Đăng ký thành công', res.message);
-      // router.push('/dashboard');
-    }else {
-      openNotification('error', 'Đăng ký thất bại', res.message);
+    try {
+      const { username, password, email, phone } = values
+      const res = await AuthService.registerHandle(username, password, phone, email)
+      if (res.statusCode === 201) {
+        showNotification('success', 'Đăng ký thành công', res.message);
+        router.push(`/auth/verify-mail?email=${encodeURIComponent(email)}`);
+      }
+    } catch (error) {
+      const msg = getAxiosErrorMessage(error);
+      showNotification('error', 'Đăng ký thất bại', msg);
     }
-  };
-  const openNotification = (
-    type: 'success' | 'info' | 'warning' | 'error',
-    message: string,
-    description: string,
-  ) => {
-    notification[type]({
-      message,
-      description,
-      placement: 'topRight',
-      duration: 2.5,
-    });
   };
 
 
@@ -137,9 +129,6 @@ const Register = () => {
             </Button>
           </Form.Item>
         </Form>
-        <Button onClick={() => openNotification('success', 'Test', 'Notification test')}>
-  Test Notification
-</Button>
       </div>
     </div>
 
